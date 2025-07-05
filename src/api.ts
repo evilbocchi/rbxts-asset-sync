@@ -94,13 +94,13 @@ function guessAssetType(ext: string): string {
         case ".png":
         case ".jpg":
         case ".jpeg":
-            return "Decal";
+            return "Image";
         case ".mp3":
         case ".ogg":
             return "Audio";
         case ".fbx":
             return "Model";
         default:
-            return "Decal"; // fallback
+            return "Image"; // fallback
     }
 }
