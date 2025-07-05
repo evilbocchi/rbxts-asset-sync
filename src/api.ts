@@ -2,7 +2,7 @@ import FormData from "form-data";
 import mime from "mime";
 import path from "path";
 
-export async function uploadAsset(filename: string, buffer: Buffer): Promise<string> {
+export async function uploadAsset(filename: string, buffer: Buffer): Promise<string | undefined> {
     const API_KEY = process.env.ROBLOX_API_KEY;
     const USER_ID = process.env.ROBLOX_USER_ID;
     const GROUP_ID = process.env.ROBLOX_GROUP_ID;
@@ -14,9 +14,14 @@ export async function uploadAsset(filename: string, buffer: Buffer): Promise<str
     const ext = path.extname(filename).toLowerCase();
     const contentType = mime.getType(ext) || "application/octet-stream";
 
+    const guessed = guessAssetType(ext);
+    if (!guessed) {
+        return undefined;
+    }
+
     // Prepare the request JSON (without fileContent)
     const requestData = {
-        assetType: guessAssetType(ext),
+        assetType: guessed,
         displayName: filename,
         description: "Uploaded via rbx-asset-sync",
         creationContext: {
@@ -51,7 +56,7 @@ export async function uploadAsset(filename: string, buffer: Buffer): Promise<str
 
     const data = await res.json();
 
-    await new Promise((resolve) => setTimeout(resolve, 3000)); // wait for 3 seconds to ensure asset is processed
+    await new Promise((resolve) => setTimeout(resolve, 500)); // short delay to ensure asset is processed
     const asset = await getAsset(data.path);
     return asset.response.assetId;
 }
@@ -80,8 +85,7 @@ export async function getAsset(operationPath: string, retries = 3) {
 
     const data = await res.json();
     if (!data.done) {
-        // wait for 3 seconds
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         console.log(`Asset not ready yet, retrying...`);
         return getAsset(operationPath, retries + 1);
     }
@@ -89,7 +93,7 @@ export async function getAsset(operationPath: string, retries = 3) {
     return data;
 }
 
-function guessAssetType(ext: string): string {
+function guessAssetType(ext: string) {
     switch (ext) {
         case ".png":
         case ".jpg":
@@ -101,6 +105,6 @@ function guessAssetType(ext: string): string {
         case ".fbx":
             return "Model";
         default:
-            return "Image"; // fallback
+            return;
     }
 }

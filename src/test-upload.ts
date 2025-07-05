@@ -24,6 +24,10 @@ const filename = path.basename(resolvedPath);
 
 uploadAsset(filename, fileBuffer)
     .then((id) => {
+        if (!id) {
+            console.error(`${prefix} ❌ Upload failed: Unsupported file type or API error.`);
+            return;
+        }
         console.log(`${prefix} ✅ Uploaded successfully: rbxassetid://${id}`);
     })
     .catch((err) => {

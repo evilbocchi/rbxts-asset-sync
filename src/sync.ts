@@ -57,6 +57,10 @@ export async function syncAssetFile(filePath: string) {
 
     try {
         const assetId = await uploadAsset(assetName, assetBuffer);
+        if (!assetId) {
+            console.warn(`${prefix} Skipping ${filePath} due to unsupported file type.`);
+            return;
+        }
         console.log(`${prefix} Uploaded ${filePath} -> rbxassetid://${assetId}`);
         hashToAssetIdMap[hash] = assetId;
         pathToAssetIdMap[filePath] = assetId;
