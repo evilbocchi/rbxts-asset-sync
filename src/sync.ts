@@ -147,7 +147,7 @@ export async function syncAssetFile(filePath: string, verbose = true): Promise<v
  * // Returns: ["C:/project/assets/image.png", "C:/project/assets/sounds/audio.mp3"]
  * ```
  */
-function getAllAssetFiles(watchingPath: string): string[] {
+export function getAllAssetFiles(watchingPath: string): string[] {
     /**
      * Recursively walks a directory and collects all file paths.
      * 
