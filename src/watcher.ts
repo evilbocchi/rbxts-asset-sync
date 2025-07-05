@@ -1,43 +1,41 @@
 import chokidar from "chokidar";
 import fs from "fs";
 import path from "path";
-import { prefix, watchingPath } from "./parameters.js";
-import { syncAssetFile } from "./sync.js";
+import { prefix, searchPath } from "./parameters.js";
+import { syncAssetFile, syncAssetsOnce } from "./sync.js";
 
 export function startWatcher() {
+    const watchPath = path.resolve(searchPath);
+
     // Verify the watch path exists
-    if (!fs.existsSync(watchingPath)) {
-        console.error(`${prefix} Error: Watch path does not exist: ${watchingPath}`);
+    if (!fs.existsSync(watchPath)) {
+        console.error(`${prefix} Error: Watch path does not exist: ${watchPath}`);
         return;
     }
 
-    console.log(`${prefix} Starting watcher for path: ${path.resolve(watchingPath)}`);
-
-    const watcher = chokidar.watch(`${watchingPath}/**/*`, {
-        ignoreInitial: true,
+    // do a one-time sync before starting the watcher
+    syncAssetsOnce(false);
+    const watcher = chokidar.watch(`${watchPath}/**/*`, {
         persistent: true,
-        followSymlinks: false,
-        usePolling: process.platform === 'win32',
-        interval: 1000,
-        binaryInterval: 1000,
-        ignorePermissionErrors: true,
-        atomic: true, // Wait for write operations to complete
+        ignoreInitial: true,
     });
 
     watcher
         .on("ready", () => {
-            console.log(`${prefix} Watcher is ready and watching for changes in ${watchingPath}.`);
+            console.log(`${prefix} Watcher is ready and watching for changes in ${watchPath}.`);
         })
         .on("add", (filePath) => {
             console.log(`${prefix} File added: ${filePath}`);
-            syncAssetFile(filePath);
+            filePath = path.resolve(watchPath, filePath);
+            syncAssetFile(filePath, false);
         })
         .on("change", (filePath) => {
             console.log(`${prefix} File changed: ${filePath}`);
-            syncAssetFile(filePath);
+            filePath = path.resolve(watchPath, filePath);
+            syncAssetFile(filePath, false);
         })
-        .on("unlink", (filePath) => {
-            console.log(`${prefix} File removed: ${filePath}`);
-            // We don't actually need to handle deletions
+
+        .on("error", (error) => {
+            console.error(`${prefix} Watcher error:`, error);
         });
 }
