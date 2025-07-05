@@ -2,8 +2,8 @@
 	"compilerOptions": {
         "allowSyntheticDefaultImports": true,
 		"downlevelIteration": true,
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
+        "module": "commonjs",
+        "moduleResolution": "node10",
         "resolveJsonModule": true,
         "experimentalDecorators": true,
         "forceConsistentCasingInFileNames": true,

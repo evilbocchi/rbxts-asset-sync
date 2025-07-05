@@ -1,8 +1,8 @@
 import chokidar from "chokidar";
 import fs from "fs";
 import path from "path";
-import { prefix, searchPath } from "./parameters.js";
-import { save, syncAssetFile, syncAssetsOnce, unlinkAssetFile } from "./sync.js";
+import { prefix, searchPath } from "./parameters";
+import { save, syncAssetFile, syncAssetsOnce, unlinkAssetFile } from "./sync";
 
 export function startWatcher() {
     // Verify the watch path exists

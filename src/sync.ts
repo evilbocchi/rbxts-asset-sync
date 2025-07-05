@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
-import { uploadAsset } from "./api.js";
-import { assetMapOutputPath, cacheOutputPath, prefix, searchPath } from "./parameters.js";
+import { uploadAsset } from "./api";
+import { assetMapOutputPath, cacheOutputPath, prefix, searchPath } from "./parameters";
 
 /**
  * Cache mapping file hashes to Roblox asset IDs to avoid re-uploading identical files.
