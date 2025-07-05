@@ -2,7 +2,10 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import { uploadAsset } from "./api.js";
-import { assetMapOutputPath, cacheOutputPath, prefix, searchPath } from "./parameters.js";
+import { assetMapOutputPath, cacheOutputPath, prefix, searchPath, bleedMode } from "./parameters.js";
+import { getHash } from "hash.js";
+import { bleedAlpha } from "./bleed.js";
+import sharp from "sharp";
 
 /**
  * Cache mapping file hashes to Roblox asset IDs to avoid re-uploading identical files.
@@ -101,9 +104,16 @@ export async function syncAssetsOnce(verbose = true): Promise<void> {
  * ```
  */
 export async function syncAssetFile(filePath: string, verbose = true): Promise<string | undefined> {
-    const assetBuffer = fs.readFileSync(filePath);
+    let assetBuffer = fs.readFileSync(filePath);
     const assetName = path.basename(filePath);
-    const hash = crypto.createHash("sha1").update(assetBuffer).digest("hex");
+    let hash = getHash(assetBuffer);
+
+    // If --bleed is enabled and this is an image,
+    if (bleedMode && /\.(png|jpg|jpeg)$/i.test(assetName)) {
+        hash += "(bleed)";
+        const processed = await bleedAlpha(assetBuffer);
+        assetBuffer = Buffer.from(processed);
+    }
 
     if (hash in hashToAssetIdMap) {
         const assetId = hashToAssetIdMap[hash];
