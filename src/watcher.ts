@@ -5,24 +5,22 @@ import { prefix, searchPath } from "./parameters.js";
 import { save, syncAssetFile, syncAssetsOnce, unlinkAssetFile } from "./sync.js";
 
 export function startWatcher() {
-    const watchPath = path.resolve(searchPath);
-
     // Verify the watch path exists
-    if (!fs.existsSync(watchPath)) {
-        console.error(`${prefix} Error: Watch path does not exist: ${watchPath}`);
+    if (!fs.existsSync(searchPath)) {
+        console.error(`${prefix} Error: Watch path does not exist: ${searchPath}`);
         return;
     }
 
     // do a one-time sync before starting the watcher
     syncAssetsOnce(false);
-    const watcher = chokidar.watch(`${watchPath}/**/*`, {
+    const watcher = chokidar.watch(`${searchPath}/**/*`, {
         persistent: true,
         ignoreInitial: true,
     });
 
     watcher
         .on("ready", () => {
-            console.log(`${prefix} Watcher is ready and watching for changes in ${watchPath}.`);
+            console.log(`${prefix} Watcher is ready and watching for changes in ${searchPath}.`);
         })
         .on("add", (filePath) => {
             console.log(`${prefix} File added: ${filePath}`);
