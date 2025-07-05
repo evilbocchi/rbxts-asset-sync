@@ -60,6 +60,19 @@ async function saveAssetMap(verbose = true) {
 }
 
 /**
+ * Saves both the cache and asset map to disk.
+ * This is called after all assets have been processed to ensure everything is up-to-date.
+ * 
+ * @param verbose - Whether to log the save operations (default: true)
+ */
+export async function save(verbose = true): Promise<void> {
+    await Promise.all([
+        saveCache(verbose),
+        saveAssetMap(verbose)
+    ]);
+}
+
+/**
  * Synchronizes all asset files in the watching directory once.
  * This is the main entry point for batch synchronization.
  * 
@@ -71,10 +84,7 @@ export async function syncAssetsOnce(verbose = true): Promise<void> {
     for (const file of files) {
         await syncAssetFile(file, verbose);
     }
-    await Promise.all([
-        saveCache(verbose),
-        saveAssetMap(verbose)
-    ]);
+    await save(verbose);
 }
 
 /**
@@ -160,4 +170,32 @@ function getAllAssetFiles(watchingPath: string): string[] {
     };
 
     return walk(watchingPath);
+}
+
+/**
+ * Unlinks an asset file from the asset map.
+ * This is called when a file is deleted or removed from the watching directory.
+ * 
+ * @param filePath - Absolute path to the asset file to unlink
+ */
+export function unlinkAssetFile(filePath: string): void {
+    delete pathToAssetIdMap[filePath];
+}
+
+/**
+ * Finds unused asset IDs in the cache and removes them.
+ */
+export function cleanCache() {
+    const usedAssetIds = new Set(Object.values(pathToAssetIdMap));
+    const unusedHashes = Object.keys(hashToAssetIdMap).filter(hash => !usedAssetIds.has(hashToAssetIdMap[hash]));
+
+    for (const hash of unusedHashes) {
+        delete hashToAssetIdMap[hash];
+    }
+
+    if (unusedHashes.length > 0) {
+        console.log(`${prefix} Cleaned up ${unusedHashes.length} unused asset IDs from cache.`);
+    } else {
+        console.log(`${prefix} No unused asset IDs found in cache.`);
+    }
 }

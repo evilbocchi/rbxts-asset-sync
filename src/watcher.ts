@@ -2,7 +2,7 @@ import chokidar from "chokidar";
 import fs from "fs";
 import path from "path";
 import { prefix, searchPath } from "./parameters.js";
-import { syncAssetFile, syncAssetsOnce } from "./sync.js";
+import { save, syncAssetFile, syncAssetsOnce, unlinkAssetFile } from "./sync.js";
 
 export function startWatcher() {
     const watchPath = path.resolve(searchPath);
@@ -28,11 +28,17 @@ export function startWatcher() {
             console.log(`${prefix} File added: ${filePath}`);
             filePath = path.resolve(watchPath, filePath);
             syncAssetFile(filePath, false);
+            save(false);
         })
         .on("change", (filePath) => {
             console.log(`${prefix} File changed: ${filePath}`);
             filePath = path.resolve(watchPath, filePath);
             syncAssetFile(filePath, false);
+            save(false);
+        })
+        .on("unlink", (filePath) => {
+            console.log(`${prefix} File removed: ${filePath}`);
+            unlinkAssetFile(filePath);
         })
 
         .on("error", (error) => {

@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 
 import dotenv from "dotenv";
-import { watchMode } from "./parameters.js";
-import { syncAssetsOnce } from "./sync.js";
+import { cleanMode, watchMode } from "./parameters.js";
+import { cleanCache, syncAssetsOnce } from "./sync.js";
 import { startWatcher } from "./watcher.js";
 
 dotenv.config();
+
+if (cleanMode) {
+    cleanCache();
+}
 
 if (watchMode) {
     startWatcher();
