@@ -8,3 +8,4 @@
 **/out
 .rbx-sync-cache.json
 assetMap.ts
+/example/include
