@@ -2,6 +2,14 @@ import FormData from "form-data";
 import mime from "mime";
 import path from "path";
 
+/**
+ * Uploads an asset to the Roblox Open Cloud API.
+ * 
+ * @param filename - The name of the file to upload.
+ * @param buffer - The file content as a Buffer.
+ * @returns The uploaded asset's ID as a string, or undefined if the asset type is not supported.
+ * @throws If the ROBLOX_API_KEY environment variable is not set or the upload fails.
+ */
 export async function uploadAsset(filename: string, buffer: Buffer): Promise<string | undefined> {
     const API_KEY = process.env.ROBLOX_API_KEY;
     const USER_ID = process.env.ROBLOX_USER_ID;
@@ -61,6 +69,14 @@ export async function uploadAsset(filename: string, buffer: Buffer): Promise<str
     return asset.response.assetId;
 }
 
+/**
+ * Polls the Roblox Open Cloud API for the status of an asset upload operation.
+ * 
+ * @param operationPath - The operation path returned from the upload request.
+ * @param retries - Number of retries before giving up (default: 3).
+ * @returns The asset operation response object.
+ * @throws If the ROBLOX_API_KEY environment variable is not set or max retries are exceeded.
+ */
 export async function getAsset(operationPath: string, retries = 3) {
     if (retries-- <= 0) {
         throw "Max retries exceeded while fetching asset";
@@ -93,6 +109,12 @@ export async function getAsset(operationPath: string, retries = 3) {
     return data;
 }
 
+/**
+ * Guesses the Roblox asset type based on the file extension.
+ * 
+ * @param ext - The file extension (including the dot, e.g., ".png").
+ * @returns The asset type as a string ("Image", "Audio", "Model"), or undefined if unsupported.
+ */
 function guessAssetType(ext: string) {
     switch (ext) {
         case ".png":
