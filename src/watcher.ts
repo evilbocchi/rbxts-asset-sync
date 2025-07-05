@@ -26,13 +26,11 @@ export function startWatcher() {
         })
         .on("add", (filePath) => {
             console.log(`${prefix} File added: ${filePath}`);
-            filePath = path.resolve(watchPath, filePath);
             syncAssetFile(filePath, false);
             save(false);
         })
         .on("change", (filePath) => {
             console.log(`${prefix} File changed: ${filePath}`);
-            filePath = path.resolve(watchPath, filePath);
             syncAssetFile(filePath, false);
             save(false);
         })

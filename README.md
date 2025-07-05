@@ -49,7 +49,7 @@ Uploads all assets in the watched folder and generates the asset map.
 npx rbxts-asset-sync
 ```
 
-### Watch Mode (WIP, don't use)
+### Watch Mode
 
 Continuously watches for changes and uploads new/changed assets automatically.
 
