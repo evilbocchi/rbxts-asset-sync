@@ -1,8 +1,11 @@
-<center>
-<img src="assets/icon.png">
-</center>
+<p align="center">
+    <img src="assets/icon.png">
+</p>
 
 # rbxts-asset-sync
+[![Build](https://github.com/evilbocchi/rbxts-asset-sync/actions/workflows/build-and-release.yml/badge.svg?branch=master&event=push)](https://github.com/evilbocchi/rbxts-asset-sync/actions/workflows/build-and-release.yml)
+[![GitHub](https://img.shields.io/github/release/evilbocchi/rbxts-asset-sync.svg)](https://github.com/evilbocchi/rbxts-asset-sync/releases/latest)
+[![CodeFactor](https://www.codefactor.io/repository/github/evilbocchi/rbxts-asset-sync/badge)](https://www.codefactor.io/repository/github/evilbocchi/rbxts-asset-sync)
 
 Local asset CDN pipeline for [roblox-ts](https://roblox-ts.com/).  
 **rbxts-asset-sync** automates the process of uploading local asset files (images, audio, models, etc.) to Roblox via the Open Cloud API, and generates a TypeScript asset map for easy asset referencing in your roblox-ts projects.
@@ -93,7 +96,7 @@ const assetId = getAsset("assets/test.png");
 // Use assetId with Roblox APIs
 ```
 
-> Changes to Rojo's file tree and tsconfig.json may be needed if assetMap.ts is *outside* of src, which is the default setting when no parameters are specified. View [default.project.json](test/default.project.json) and [tsconfig.json](test/tsconfig.json) in the test folder for reference.
+> Changes to Rojo's file tree and tsconfig.json may be needed if assetMap.ts is *outside* of src, which is the default setting when no parameters are specified. View [default.project.json](example/default.project.json) and [tsconfig.json](example/tsconfig.json) in the example folder for reference.
 
 ## Advanced
 

@@ -3,6 +3,9 @@ import fs from "fs";
 import { prefix, searchPath } from "./parameters.js";
 import { save, syncAssetFile, syncAssetsOnce, unlinkAssetFile } from "./sync.js";
 
+/**
+ * Starts the file watcher to monitor changes in the specified asset directory.
+ */
 export function startWatcher() {
     // Verify the watch path exists
     if (!fs.existsSync(searchPath)) {
