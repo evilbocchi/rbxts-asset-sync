@@ -5,6 +5,7 @@
 # rbxts-asset-sync
 [![Build](https://github.com/evilbocchi/rbxts-asset-sync/actions/workflows/build-and-release.yml/badge.svg?branch=master&event=push)](https://github.com/evilbocchi/rbxts-asset-sync/actions/workflows/build-and-release.yml)
 [![GitHub](https://img.shields.io/github/release/evilbocchi/rbxts-asset-sync.svg)](https://github.com/evilbocchi/rbxts-asset-sync/releases/latest)
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/evilbocchi.rbxtsasvs?label=VS%20Code%20Extension)](https://marketplace.visualstudio.com/items?itemName=evilbocchi.rbxtsasvs)
 [![CodeFactor](https://www.codefactor.io/repository/github/evilbocchi/rbxts-asset-sync/badge)](https://www.codefactor.io/repository/github/evilbocchi/rbxts-asset-sync)
 
 Local asset CDN pipeline for [roblox-ts](https://roblox-ts.com/).  
@@ -17,6 +18,7 @@ Local asset CDN pipeline for [roblox-ts](https://roblox-ts.com/).
 - **Change Watching:** Optionally watches your asset folder and syncs changes automatically.
 - **Caching:** Avoids re-uploading unchanged assets using a hash-based cache.
 - **Roblox-ts Integration:** Asset map can be imported and used directly in roblox-ts scripts.
+- **VS Code Integration:** Install the [VS Code extension](https://github.com/evilbocchi/rbxts-asset-sync-vscode) to enjoy image/audio previews and information from simply hovering over.
 
 ## Installation
 
@@ -98,12 +100,16 @@ const assetId = getAsset("assets/test.png");
 
 > Changes to Rojo's file tree and tsconfig.json may be needed if assetMap.ts is *outside* of src, which is the default setting when no parameters are specified. View [default.project.json](example/default.project.json) and [tsconfig.json](example/tsconfig.json) in the example folder for reference.
 
-## Advanced
+# Integration with VS Code
 
-- **Custom Asset Types:**  
-  The tool guesses asset types by file extension (`.png`, `.jpg` → Decal, `.mp3` → Audio, etc.).
-- **Cache:**  
-  Asset hashes are stored in `.rbx-sync-cache.json` to avoid redundant uploads.
+The [rbxts-asset-sync VS Code extension](https://github.com/evilbocchi/rbxts-asset-sync-vscode) provides a seamless workflow for working with assets in your roblox-ts projects. With the extension installed:
+
+- **Asset Previews:** Hovering over asset references (such as keys in your generated asset map) shows a preview of the image or audio, along with useful metadata like dimensions or duration.
+- **Quick Navigation:** Easily jump to the asset file in your workspace directly from the hover popup.
+- **Error Highlighting:** Instantly see if an asset reference is missing or invalid, reducing runtime errors.
+- **Contextual Information:** Get additional details about the asset, such as its Roblox asset ID, right in your editor.
+
+These features help you quickly verify asset usage, reduce mistakes, and speed up development by keeping all asset-related information at your fingertips within VS Code.
 
 ## Scripts Example
 
