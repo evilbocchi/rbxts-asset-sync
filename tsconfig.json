@@ -1,16 +1,17 @@
 {
 	"compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node10",
+        
         "allowSyntheticDefaultImports": true,
 		"downlevelIteration": true,
-        "module": "commonjs",
-        "moduleResolution": "node10",
         "resolveJsonModule": true,
         "experimentalDecorators": true,
         "forceConsistentCasingInFileNames": true,
         "moduleDetection": "force",
         "isolatedModules": true,
 		"strict": true,
-        "target": "esnext",
 		"lib": [
 			"ESNext",
 			"DOM"

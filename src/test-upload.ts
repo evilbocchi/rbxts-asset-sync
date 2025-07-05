@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
-import { uploadAsset } from "./api";
-import { prefix } from "./parameters";
+import { uploadAsset } from "./api.js";
+import { prefix } from "./parameters.js";
 
 dotenv.config();
 

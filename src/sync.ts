@@ -1,19 +1,19 @@
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
-import { uploadAsset } from "./api";
-import { assetMapOutputPath, cacheOutputPath, prefix, searchPath } from "./parameters";
+import { uploadAsset } from "./api.js";
+import { assetMapOutputPath, cacheOutputPath, prefix, searchPath } from "./parameters.js";
 
 /**
  * Cache mapping file hashes to Roblox asset IDs to avoid re-uploading identical files.
  */
-let hashToAssetIdMap: Record<string, string> = {};
+export let hashToAssetIdMap: Record<string, string> = {};
 
 /**
  * Mapping of file paths to their corresponding Roblox asset IDs.
  * Used to generate the final asset map for TypeScript consumption.
  */
-const pathToAssetIdMap: Record<string, string> = {};
+export const pathToAssetIdMap: Record<string, string> = {};
 
 // Load existing cache if it exists
 if (fs.existsSync(cacheOutputPath)) {
@@ -100,7 +100,7 @@ export async function syncAssetsOnce(verbose = true): Promise<void> {
  * await syncAssetFile("C:/project/assets/image.png");
  * ```
  */
-export async function syncAssetFile(filePath: string, verbose = true): Promise<void> {
+export async function syncAssetFile(filePath: string, verbose = true): Promise<string | undefined> {
     const assetBuffer = fs.readFileSync(filePath);
     const assetName = path.basename(filePath);
     const hash = crypto.createHash("sha1").update(assetBuffer).digest("hex");
@@ -111,7 +111,7 @@ export async function syncAssetFile(filePath: string, verbose = true): Promise<v
             console.log(`${prefix} ${filePath} reused rbxassetid://${assetId}`);
         }
         pathToAssetIdMap[filePath] = assetId;
-        return;
+        return assetId;
     }
 
     try {
@@ -129,6 +129,7 @@ export async function syncAssetFile(filePath: string, verbose = true): Promise<v
 
         hashToAssetIdMap[hash] = assetId;
         pathToAssetIdMap[filePath] = assetId;
+        return assetId;
     } catch (err) {
         console.error(`${prefix} Failed to upload ${filePath}:`, err);
     }

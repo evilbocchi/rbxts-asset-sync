@@ -2,6 +2,7 @@
 /dist
 /include
 /docs
+/coverage
 *.tsbuildinfo
 **/.env
 **/out

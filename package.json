@@ -29,10 +29,16 @@
         "access": "public"
     },
     "devDependencies": {
+        "@babel/plugin-transform-modules-commonjs": "^7.27.1",
+        "@babel/preset-env": "^7.28.0",
         "@types/jest": "^30.0.0",
+        "@types/mime": "^3.0.4",
         "@types/node": "^24.0.10",
         "@typescript-eslint/eslint-plugin": "^7.18.0",
         "@typescript-eslint/parser": "^7.18.0",
+        "babel-jest": "^30.0.4",
+        "babel-plugin-transform-import-meta": "^2.3.3",
+        "core-js": "^3.43.0",
         "eslint": "^8.57.0",
         "jest": "^30.0.4",
         "ts-jest": "^29.4.0",
@@ -47,7 +53,7 @@
         "chokidar": "^3.6.0",
         "dotenv": "^17.0.1",
         "form-data": "^4.0.3",
-        "mime": "^4.0.7",
+        "mime": "^2.6.0",
         "undici": "^6.21.3"
     }
 }
