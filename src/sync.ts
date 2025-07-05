@@ -1,11 +1,9 @@
-import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 import { uploadAsset } from "./api.js";
-import { assetMapOutputPath, cacheOutputPath, prefix, searchPath, bleedMode } from "./parameters.js";
-import { getHash } from "hash.js";
 import { bleedAlpha } from "./bleed.js";
-import sharp from "sharp";
+import { getHash } from "./hash.js";
+import { assetMapOutputPath, bleedMode, cacheOutputPath, prefix, searchPath } from "./parameters.js";
 
 /**
  * Cache mapping file hashes to Roblox asset IDs to avoid re-uploading identical files.
