@@ -28,7 +28,7 @@
                 "$path": "out/src/shared"
             },
             "AssetMap": {
-                "$path": "out/assetMap.luau"
+                "$path": "out/assetMap.lua"
             }
         },
         "StarterPlayer": {
