@@ -14,8 +14,9 @@ Usage:
 
 Options:
   --help               Show this help menu
-  --clean              Clean the asset cache and exit
   --watch              Watch for file changes and sync automatically
+  --bleed              Process images to bleed alpha channel (default: false)
+  --clean              Clean the asset cache and exit
   --path=<folder>      Set the folder to watch for assets (default: assets)
   --output=<file>      Set the output path for the generated asset map (default: assetMap.ts)
   --cache=<file>       Set the cache file path (default: .rbx-sync-cache.json)
