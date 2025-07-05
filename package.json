@@ -1,0 +1,49 @@
+{
+    "name": "rbxts-asset-sync",
+    "version": "0.0.0",
+    "description": "Local asset CDN pipeline for roblox-ts",
+    "main": "dist/main.js",
+    "type": "module",
+    "bin": {
+        "rbxts-asset-sync": "dist/main.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "try": "npx tsx src/main.ts",
+        "prepublishOnly": "npm run build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/evilbocchi/rbxts-asset-sync.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "types": "dist/main.d.ts",
+    "files": [
+        "dist",
+        "!**/*.tsbuildinfo"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "devDependencies": {
+        "@types/node": "^24.0.10",
+        "@typescript-eslint/eslint-plugin": "^7.18.0",
+        "@typescript-eslint/parser": "^7.18.0",
+        "eslint": "^8.57.0",
+        "typedoc": "^0.26.5",
+        "typedoc-material-theme": "^1.1.0",
+        "typedoc-plugin-extras": "^3.1.0",
+        "typedoc-plugin-missing-exports": "^3.0.0",
+        "typedoc-plugin-rename-defaults": "^0.7.1",
+        "typescript": "^5.5.4"
+    },
+    "dependencies": {
+        "chokidar": "^4.0.3",
+        "dotenv": "^17.0.1",
+        "form-data": "^4.0.3",
+        "mime": "^4.0.7",
+        "undici": "^6.21.3"
+    }
+}

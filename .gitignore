@@ -1,0 +1,9 @@
+**/node_modules
+/dist
+/include
+/docs
+*.tsbuildinfo
+**/.env
+**/out
+.rbx-sync-cache.json
+assetMap.ts

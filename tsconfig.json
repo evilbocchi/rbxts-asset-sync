@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+		"downlevelIteration": true,
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "resolveJsonModule": true,
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "moduleDetection": "force",
+		"strict": true,
+        "target": "esnext",
+		"lib": [
+			"ESNext",
+			"DOM"
+		],
+        "skipLibCheck": true,
+		"esModuleInterop": true,
+
+        "rootDir": "src",
+		"outDir": "dist",
+		"baseUrl": "src",
+		"tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+        "declaration": true
+	},
+	"include": ["src/**/*", "main.d.ts"]
+}
