@@ -8,6 +8,7 @@
         "experimentalDecorators": true,
         "forceConsistentCasingInFileNames": true,
         "moduleDetection": "force",
+        "isolatedModules": true,
 		"strict": true,
         "target": "esnext",
 		"lib": [

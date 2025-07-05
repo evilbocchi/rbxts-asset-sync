@@ -10,6 +10,7 @@
     "scripts": {
         "build": "tsc",
         "try": "npx tsx src/main.ts",
+        "test": "jest",
         "prepublishOnly": "npm run build"
     },
     "repository": {
@@ -28,10 +29,13 @@
         "access": "public"
     },
     "devDependencies": {
+        "@types/jest": "^30.0.0",
         "@types/node": "^24.0.10",
         "@typescript-eslint/eslint-plugin": "^7.18.0",
         "@typescript-eslint/parser": "^7.18.0",
         "eslint": "^8.57.0",
+        "jest": "^30.0.4",
+        "ts-jest": "^29.4.0",
         "typedoc": "^0.26.5",
         "typedoc-material-theme": "^1.1.0",
         "typedoc-plugin-extras": "^3.1.0",
