@@ -17,7 +17,7 @@ export async function bleedAlpha(input: sharp.SharpInput | Array<sharp.SharpInpu
     const image = sharp(input);
     const { width, height } = await image.metadata();
     if (!width || !height)
-        throw new Error('Invalid image dimensions');
+        throw 'Invalid image dimensions';
 
     const raw = await image.raw().ensureAlpha().toBuffer();
     const channels = 4;
