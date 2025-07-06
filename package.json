@@ -6,7 +6,8 @@
     "type": "module",
     "bin": {
         "rbxtsas": "dist/main.js",
-        "rbxts-asset-sync": "dist/main.js"
+        "rbxts-asset-sync": "dist/main.js",
+        "rbxtsas-test-upload": "dist/test-upload.js"
     },
     "scripts": {
         "build": "tsc",

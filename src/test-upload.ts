@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
@@ -9,7 +11,7 @@ dotenv.config();
 const [_, __, fileArg] = process.argv;
 
 if (!fileArg) {
-    console.error("Usage: npx rbxts-asset-sync test-upload <filepath>");
+    console.error("Usage: npx rbxtsas-test-upload <filepath>");
     process.exit(1);
 }
 
