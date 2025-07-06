@@ -3,7 +3,7 @@
 </p>
 
 # rbxts-asset-sync
-[![Build](https://github.com/evilbocchi/rbxts-asset-sync/actions/workflows/build-and-release.yml/badge.svg?branch=master&event=push)](https://github.com/evilbocchi/rbxts-asset-sync/actions/workflows/build-and-release.yml)
+[![Build](https://github.com/evilbocchi/rbxts-asset-sync/actions/workflows/build-and-release.yml/badge.svg?branch=main&event=push)](https://github.com/evilbocchi/rbxts-asset-sync/actions/workflows/build-and-release.yml)
 [![GitHub](https://img.shields.io/github/release/evilbocchi/rbxts-asset-sync.svg)](https://github.com/evilbocchi/rbxts-asset-sync/releases/latest)
 [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/evilbocchi.rbxtsasvs?label=VS%20Code%20Extension)](https://marketplace.visualstudio.com/items?itemName=evilbocchi.rbxtsasvs)
 [![CodeFactor](https://www.codefactor.io/repository/github/evilbocchi/rbxts-asset-sync/badge)](https://www.codefactor.io/repository/github/evilbocchi/rbxts-asset-sync)
