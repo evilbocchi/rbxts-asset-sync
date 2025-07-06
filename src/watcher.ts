@@ -1,25 +1,38 @@
 import chokidar from "chokidar";
 import fs from "fs";
+import { pullGithubAssetMap, pushGithubAssetMap } from "github.js";
 import LOGGER from "./logging.js";
 import { prefix, searchPath } from "./parameters.js";
-import { save, syncAssetFile, syncAssetsOnce, unlinkAssetFile } from "./sync.js";
+import { save, syncAssetFile, unlinkAssetFile } from "./sync.js";
 
 /**
  * Starts the file watcher to monitor changes in the specified asset directory.
  */
-export function startWatcher() {
+export async function startWatcher() {
     // Verify the watch path exists
     if (!fs.existsSync(searchPath)) {
         console.error(`${prefix} Error: Watch path does not exist: ${searchPath}`);
         return;
     }
 
-    // do a one-time sync before starting the watcher
-    syncAssetsOnce();
     const watcher = chokidar.watch(`${searchPath}/**/*`, {
         persistent: true,
         ignoreInitial: true,
     });
+
+    let debounceTimer: NodeJS.Timeout | null = null;
+    const DEBOUNCE_MS = 500;
+
+    const applyChanges = () => {
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
+        }
+        debounceTimer = setTimeout(() => {
+            pullGithubAssetMap();
+            save();
+            pushGithubAssetMap();
+        }, DEBOUNCE_MS);
+    };
 
     watcher
         .on("ready", () => {
@@ -28,17 +41,17 @@ export function startWatcher() {
         .on("add", (filePath) => {
             LOGGER.info(`File added: ${filePath}`);
             syncAssetFile(filePath);
-            save();
+            applyChanges();
         })
         .on("change", (filePath) => {
             LOGGER.info(`File changed: ${filePath}`);
             syncAssetFile(filePath);
-            save();
+            applyChanges();
         })
         .on("unlink", (filePath) => {
             LOGGER.info(`File removed: ${filePath}`);
             unlinkAssetFile(filePath);
-            save();
+            applyChanges();
         })
 
         .on("error", (error) => {

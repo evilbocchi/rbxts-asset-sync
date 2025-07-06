@@ -130,6 +130,48 @@ Add to your `package.json`:
 - Make sure your `.env` file is present and correctly configured.
 - If assets are not uploading, check the CLI output for error messages.
 
+# GitHub Asset Map Push
+
+If you want to automatically push a JSON asset map to a GitHub repository after syncing, you can use the `--github` option and a GitHub token. This is useful for sharing asset mappings across projects or CI workflows.
+
+## How to Use
+
+1. **Set up a GitHub Personal Access Token**
+   - Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens).
+   - Click "Generate new token" (classic or fine-grained).
+   - Give it `repo` scope (for private repos) or `public_repo` (for public repos).
+   - Copy the token and add it to your environment as `GITHUB_TOKEN` (e.g., in your `.env` file):
+     ```env
+     GITHUB_TOKEN=ghp_...yourtoken...
+     ```
+
+2. **Run the Sync Tool with the `--github` Option**
+   - Use the CLI with the `--github=<owner/repo>` flag:
+     ```sh
+     npx rbxts-asset-sync --github=yourusernamFe/your-repo
+     ```
+   - The tool will generate a file called `github-asset-map.json` with the following structure:
+     ```json
+     {
+       "<hash>": { "assetId": "<rbxassetid>", "filePath": "<relative/path>" },
+       ...
+     }
+     ```
+   - This file will be pushed to the root of the specified repository (on the `main` branch) as a commit.
+
+3. **Result**
+   - After the sync completes, you will see `github-asset-map.json` in your GitHub repository, always up to date with your latest asset uploads.
+
+## Example
+
+```sh
+GITHUB_TOKEN=ghp_...yourtoken... npx rbxts-asset-sync --github=evilbocchi/asset-maps-repo
+```
+
+This will push the asset map to the `evilbocchi/asset-maps-repo` repository.
+
+---
+
 ## License
 
 MIT

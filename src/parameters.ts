@@ -10,3 +10,6 @@ export let cacheOutputPath = args.find((arg) => arg.startsWith("--cache="))?.spl
 export let assetMapOutputPath = args.find((arg) => arg.startsWith("--output="))?.split("=")[1] || "assetMap.ts";
 
 export let prefix = `[rbxtsas]`;
+
+export let githubRepo = args.find((arg) => arg.startsWith("--github="))?.split("=")[1];
+export let githubBranch = args.find((arg) => arg.startsWith("--github-branch="))?.split("=")[1] || "main";
