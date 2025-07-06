@@ -1,7 +1,7 @@
 const args = process.argv.slice(2);
 
-export let watchMode = args.includes("--watch");
-export let cleanMode = args.includes("--clean");
+export let watchMode = args.includes("--watch") || args.includes("watch");
+export let cleanMode = args.includes("--clean") || args.includes("clean");
 export let bleedMode = args.includes("--bleed");
 
 export let logLevel = args.find((arg) => arg.startsWith("--log-level="))?.split("=")[1] || "info";
