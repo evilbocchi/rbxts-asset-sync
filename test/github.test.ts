@@ -19,7 +19,7 @@ const mockOctokit = {
 const TEST_REPO = "owner/repo";
 const TEST_BRANCH = "main";
 const TEST_TOKEN = "test-token";
-const TEST_FILE_PATH = "local.json";
+const TEST_CONTENT = Buffer.from("test content");
 const TEST_DEST_PATH = "remote.json";
 const TEST_COMMIT_MSG = "Test commit";
 
@@ -38,7 +38,7 @@ describe("pushFileToGitHub", () => {
         await github.pushFileToGitHub({
             repoSlug: TEST_REPO,
             branch: TEST_BRANCH,
-            filePath: TEST_FILE_PATH,
+            content: TEST_CONTENT,
             destPath: TEST_DEST_PATH,
             token: TEST_TOKEN,
             commitMessage: TEST_COMMIT_MSG,
@@ -57,7 +57,7 @@ describe("pushFileToGitHub", () => {
                 path: TEST_DEST_PATH,
                 message: TEST_COMMIT_MSG,
                 branch: TEST_BRANCH,
-                content: Buffer.from("file-content").toString("base64"),
+                content: TEST_CONTENT.toString("base64"),
                 sha: undefined,
             })
         );
@@ -71,7 +71,7 @@ describe("pushFileToGitHub", () => {
         await github.pushFileToGitHub({
             repoSlug: TEST_REPO,
             branch: TEST_BRANCH,
-            filePath: TEST_FILE_PATH,
+            content: TEST_CONTENT,
             destPath: TEST_DEST_PATH,
             token: TEST_TOKEN,
             commitMessage: TEST_COMMIT_MSG,
@@ -100,19 +100,13 @@ describe("fetchGithubAssetMap", () => {
 });
 
 describe("pushGithubAssetMap", () => {
-    it("writes the correct file and pushes to GitHub", async () => {
+    it("pushes to GitHub", async () => {
         Object.assign(pathToAssetIdMap, { "foo.png": "123" });
         Object.assign(hashToAssetIdMap, { "hash1": "123" });
-        (fs.writeFileSync as ReturnType<typeof vi.fn>).mockImplementation(() => { });
         mockOctokit.repos.getContent.mockRejectedValueOnce(new Error("Not found"));
         mockOctokit.repos.createOrUpdateFileContents.mockResolvedValueOnce({});
 
         await github.pushGithubAssetMap(TEST_REPO, TEST_BRANCH, TEST_TOKEN);
-        expect(fs.writeFileSync).toHaveBeenCalledWith(
-            expect.stringContaining("github-asset-map.json"),
-            expect.stringContaining("foo.png"),
-            // The third argument (options) is optional and may be omitted
-        );
         expect(mockOctokit.repos.createOrUpdateFileContents).toHaveBeenCalled();
     });
 });

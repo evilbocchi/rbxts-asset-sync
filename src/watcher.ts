@@ -1,6 +1,6 @@
 import chokidar from "chokidar";
 import fs from "fs";
-import { pullGithubAssetMap, pushGithubAssetMap } from "github.js";
+import { pullGithubAssetMap, pushGithubAssetMap } from "./github.js";
 import LOGGER from "./logging.js";
 import { prefix, searchPath } from "./parameters.js";
 import { save, syncAssetFile, unlinkAssetFile } from "./sync.js";

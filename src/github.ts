@@ -10,29 +10,28 @@ import { hashToAssetIdMap, pathToAssetIdMap } from "./sync.js";
  * 
  * @param repoSlug The repo in the form "owner/repo"
  * @param branch The branch to push to (default: main)
- * @param filePath The path to the file to push (local)
+ * @param content The content to push (as a Buffer)
  * @param destPath The path in the repo to write to
  * @param token The GitHub token
  */
 export async function pushFileToGitHub({
     repoSlug,
     branch = "main",
-    filePath,
+    content,
     destPath,
     token,
     commitMessage = "Update asset map"
 }: {
     repoSlug: string;
     branch?: string;
-    filePath: string;
+    content: Buffer;
     destPath: string;
     token: string;
     commitMessage?: string;
 }) {
     const [owner, repo] = repoSlug.split("/");
     const octokit = new Octokit({ auth: token });
-    const content = fs.readFileSync(filePath, "utf8");
-    const contentEncoded = Buffer.from(content).toString("base64");
+    const contentEncoded = content.toString("base64");
 
     // Get the SHA if the file already exists
     let sha: string | undefined = undefined;
@@ -124,13 +123,12 @@ export async function pushGithubAssetMap(repoSlug = githubRepo, branch = "main",
             hashMap[hash] = { assetId, filePath };
         }
     }
-    const outFile = path.resolve("github-asset-map.json");
-    fs.writeFileSync(outFile, JSON.stringify(hashMap, null, 2));
+    const content = Buffer.from(JSON.stringify(hashMap, null, 2), "utf8");
     try {
         await pushFileToGitHub({
             repoSlug,
             branch,
-            filePath: outFile,
+            content,
             destPath: "github-asset-map.json",
             token,
             commitMessage: "Update asset map from asset sync"
