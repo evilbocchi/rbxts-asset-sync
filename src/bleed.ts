@@ -1,10 +1,18 @@
 import sharp from "sharp";
 
+// The nearest neighbor directions for bleeding alpha
 const directions = [
     [-1, 0], [1, 0], [0, -1], [0, 1],
     [-1, -1], [-1, 1], [1, -1], [1, 1],
 ];
 
+/**
+ * Processes an image to bleed the alpha channel, filling transparent pixels
+ * with the color of the nearest non-transparent pixel.
+ *
+ * @param input - The input image file or buffer.
+ * @returns A buffer containing the processed PNG image with bleeding alpha.
+ */
 export async function bleedAlpha(input: sharp.SharpInput | Array<sharp.SharpInput>): Promise<Buffer> {
     const image = sharp(input);
     const { width, height } = await image.metadata();
