@@ -3,7 +3,8 @@ import path from "path";
 import { uploadAsset } from "./api.js";
 import { bleedAlpha } from "./bleed.js";
 import { getHash } from "./hash.js";
-import { assetMapOutputPath, bleedMode, cacheOutputPath, prefix, searchPath, verbose } from "./parameters.js";
+import LOGGER from "./logging.js";
+import { assetMapOutputPath, bleedMode, cacheOutputPath, searchPath } from "./parameters.js";
 
 /**
  * Cache mapping file hashes to Roblox asset IDs to avoid re-uploading identical files.
@@ -27,9 +28,7 @@ if (fs.existsSync(cacheOutputPath)) {
  */
 async function saveCache() {
     await fs.promises.writeFile(cacheOutputPath, JSON.stringify(hashToAssetIdMap, null, 2));
-    if (verbose) {
-        console.log(`${prefix} Cache saved to ${cacheOutputPath}`);
-    }
+    LOGGER.info(`Cache saved to ${cacheOutputPath}`);
 }
 
 /**
@@ -51,9 +50,7 @@ async function saveAssetMap() {
     lines.push("export function getAsset(path: keyof typeof assets): string {\n  return assets[path];\n}");
 
     await fs.promises.writeFile(assetMapOutputPath, lines.join("\n"));
-    if (verbose) {
-        console.log(`${prefix} Asset map generated with ${Object.keys(pathToAssetIdMap).length} entries.`);
-    }
+    LOGGER.info(`Asset map generated with ${Object.keys(pathToAssetIdMap).length} entries at ${assetMapOutputPath}`);
 }
 
 /**
@@ -107,9 +104,7 @@ export async function syncAssetFile(filePath: string): Promise<string | undefine
 
     if (hash in hashToAssetIdMap) {
         const assetId = hashToAssetIdMap[hash];
-        if (verbose) {
-            console.log(`${prefix} ${filePath} reused rbxassetid://${assetId}`);
-        }
+        LOGGER.info(`${filePath} reused rbxassetid://${assetId}`);
         pathToAssetIdMap[filePath] = assetId;
         return assetId;
     }
@@ -117,21 +112,17 @@ export async function syncAssetFile(filePath: string): Promise<string | undefine
     try {
         const assetId = await uploadAsset(assetName, assetBuffer);
         if (!assetId) {
-            if (verbose) {
-                console.warn(`${prefix} Skipping ${filePath} due to unsupported file type.`);
-            }
+            LOGGER.warn(`Skipping ${filePath} due to unsupported file type.`);
             return;
         }
 
-        if (verbose) {
-            console.log(`${prefix} Uploaded ${filePath} -> rbxassetid://${assetId}`);
-        }
+        LOGGER.info(`Uploaded ${filePath} -> rbxassetid://${assetId}`);
 
         hashToAssetIdMap[hash] = assetId;
         pathToAssetIdMap[filePath] = assetId;
         return assetId;
     } catch (err) {
-        console.error(`${prefix} Failed to upload ${filePath}:`, err);
+        LOGGER.error(`Failed to upload ${filePath}:`, err);
     }
 }
 
@@ -195,8 +186,8 @@ export function cleanCache() {
     }
 
     if (unusedHashes.length > 0) {
-        console.log(`${prefix} Cleaned up ${unusedHashes.length} unused asset IDs from cache.`);
+        LOGGER.info(`Cleaned up ${unusedHashes.length} unused asset IDs from cache.`);
     } else {
-        console.log(`${prefix} No unused asset IDs found in cache.`);
+        LOGGER.info(`No unused asset IDs found in cache.`);
     }
 }

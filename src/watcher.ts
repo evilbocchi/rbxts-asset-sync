@@ -1,6 +1,7 @@
 import chokidar from "chokidar";
 import fs from "fs";
-import { prefix, searchPath, verbose } from "./parameters.js";
+import LOGGER from "./logging.js";
+import { prefix, searchPath } from "./parameters.js";
 import { save, syncAssetFile, syncAssetsOnce, unlinkAssetFile } from "./sync.js";
 
 /**
@@ -22,25 +23,25 @@ export function startWatcher() {
 
     watcher
         .on("ready", () => {
-            console.log(`${prefix} Watcher is ready and watching for changes in ${searchPath}.`);
+            LOGGER.info(`Watcher is ready and watching for changes in ${searchPath}.`);
         })
         .on("add", (filePath) => {
-            console.log(`${prefix} File added: ${filePath}`);
+            LOGGER.info(`File added: ${filePath}`);
             syncAssetFile(filePath);
             save();
         })
         .on("change", (filePath) => {
-            console.log(`${prefix} File changed: ${filePath}`);
+            LOGGER.info(`File changed: ${filePath}`);
             syncAssetFile(filePath);
             save();
         })
         .on("unlink", (filePath) => {
-            console.log(`${prefix} File removed: ${filePath}`);
+            LOGGER.info(`File removed: ${filePath}`);
             unlinkAssetFile(filePath);
             save();
         })
 
         .on("error", (error) => {
-            console.error(`${prefix} Watcher error:`, error);
+            LOGGER.fatal(`Watcher error:`, error);
         });
 }

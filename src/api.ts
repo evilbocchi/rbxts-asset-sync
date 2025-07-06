@@ -1,6 +1,7 @@
 import FormData from "form-data";
 import mime from "mime";
 import path from "path";
+import LOGGER from "./logging.js";
 
 /**
  * Uploads an asset to the Roblox Open Cloud API.
@@ -95,14 +96,14 @@ export async function getAsset(operationPath: string, retries = 3) {
 
     if (!res.ok) {
         const errText = await res.text();
-        console.warn(`Failed to fetch asset: ${res.status} ${res.statusText}\n${errText} (Retries left: ${retries})`);
+        LOGGER.warn(`Failed to fetch asset: ${res.status} ${res.statusText}\n${errText} (Retries left: ${retries})`);
         return getAsset(operationPath, retries);
     }
 
     const data = await res.json();
     if (!data.done) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        console.log(`Asset not ready yet, retrying...`);
+        LOGGER.info("Asset not ready yet, retrying...");
         return getAsset(operationPath, retries + 1);
     }
 

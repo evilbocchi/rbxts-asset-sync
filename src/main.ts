@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 import dotenv from "dotenv";
+import LOGGER from "./logging.js";
 import { cleanMode, watchMode } from "./parameters.js";
 import { cleanCache, syncAssetsOnce } from "./sync.js";
 import { startWatcher } from "./watcher.js";
 
 function printHelp() {
-    console.log(`
+    LOGGER.log(`
 Usage:
   rbxtsas [options]
 
@@ -16,10 +17,10 @@ Description:
 Options:
   --bleed              Process images to bleed alpha channel (default: false)
   --clean              Clean the asset cache and exit
-  --silent             Suppress all output except errors
   --watch              Watch for file changes and sync automatically
 
   --cache=<file>       Set the cache file path (default: .rbx-sync-cache.json)
+  --log-level=<level>  Set the logging level: debug|info|warn|error (default: info)
   --path=<folder>      Set the directory to look for assets (default: assets)
   --output=<file>      Set the output path for the generated asset map (default: assetMap.ts)
   --github=<repo>      Publish asset map and cache to GitHub repository (default: none)
