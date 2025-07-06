@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import fs from "fs";
-import { githubRepo } from "parameters.js";
+import { githubRepo } from "./parameters.js";
 import path from "path";
 import LOGGER from "./logging.js";
 import { hashToAssetIdMap, pathToAssetIdMap, save } from "./sync.js";

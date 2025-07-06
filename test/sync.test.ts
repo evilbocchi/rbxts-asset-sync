@@ -2,6 +2,7 @@ import { syncAssetFile, cleanCache, getAllAssetFiles, syncAssetsOnce, unlinkAsse
 import fs from "fs";
 import path from "path";
 import * as api from "../src/api"; // Import the module to mock uploadAsset
+import { vi, describe, it, expect, beforeAll, afterAll } from "vitest";
 
 describe("sync.ts", () => {
     const testAssetPath = path.join(__dirname, "../assets/icon.png");
@@ -21,10 +22,10 @@ describe("sync.ts", () => {
         const fakeAssetId = "12345";
 
         // Mock fs.readFileSync to return fakeBuffer
-        const readFileSyncSpy = jest.spyOn(fs, "readFileSync").mockReturnValue(fakeBuffer);
+        const readFileSyncSpy = vi.spyOn(fs, "readFileSync").mockReturnValue(fakeBuffer);
 
         // Mock uploadAsset to resolve with fakeAssetId
-        const uploadAssetSpy = jest.spyOn(api, "uploadAsset").mockResolvedValue(fakeAssetId);
+        const uploadAssetSpy = vi.spyOn(api, "uploadAsset").mockResolvedValue(fakeAssetId);
 
         // Call syncAssetFile
         const result = await syncAssetFile(fakeFilePath);
@@ -63,7 +64,7 @@ describe("sync.ts", () => {
     it("should handle unsupported file types in syncAssetFile", async () => {
         const fakeFile = path.join(testDir, "file.unsupported");
         fs.writeFileSync(fakeFile, Buffer.from("abc"));
-        const uploadAssetSpy = jest.spyOn(api, "uploadAsset").mockResolvedValue(undefined);
+        const uploadAssetSpy = vi.spyOn(api, "uploadAsset").mockResolvedValue(undefined);
         const result = await syncAssetFile(fakeFile);
         expect(result).toBeUndefined();
         uploadAssetSpy.mockRestore();
@@ -79,7 +80,7 @@ describe("sync.ts", () => {
     });
 
     it("should call uploadAsset for each file in syncAssetsOnce", async () => {
-        const uploadAssetSpy = jest.spyOn(api, "uploadAsset").mockResolvedValue("54321");
+        const uploadAssetSpy = vi.spyOn(api, "uploadAsset").mockResolvedValue("54321");
         await syncAssetsOnce();
         expect(uploadAssetSpy).toHaveBeenCalled();
         uploadAssetSpy.mockRestore();

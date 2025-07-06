@@ -1,0 +1,130 @@
+import { Octokit } from "@octokit/rest";
+import fs from "fs";
+import * as github from "../src/github";
+import * as sync from "../src/sync";
+import { vi, describe, it, expect, beforeEach } from "vitest";
+
+vi.mock("@octokit/rest");
+vi.mock("fs");
+vi.mock("../src/sync");
+
+const mockOctokit = {
+    repos: {
+        getContent: vi.fn(),
+        createOrUpdateFileContents: vi.fn(),
+    },
+};
+
+(Octokit as any).mockImplementation(() => mockOctokit);
+
+const TEST_REPO = "owner/repo";
+const TEST_BRANCH = "main";
+const TEST_TOKEN = "test-token";
+const TEST_FILE_PATH = "local.json";
+const TEST_DEST_PATH = "remote.json";
+const TEST_COMMIT_MSG = "Test commit";
+
+beforeEach(() => {
+    vi.clearAllMocks();
+});
+
+describe("pushFileToGitHub", () => {
+    it("pushes a new file if it does not exist", async () => {
+        (fs.readFileSync as ReturnType<typeof vi.fn>).mockReturnValue("file-content");
+        mockOctokit.repos.getContent.mockRejectedValueOnce(new Error("Not found"));
+        mockOctokit.repos.createOrUpdateFileContents.mockResolvedValueOnce({});
+
+        await github.pushFileToGitHub({
+            repoSlug: TEST_REPO,
+            branch: TEST_BRANCH,
+            filePath: TEST_FILE_PATH,
+            destPath: TEST_DEST_PATH,
+            token: TEST_TOKEN,
+            commitMessage: TEST_COMMIT_MSG,
+        });
+
+        expect(mockOctokit.repos.getContent).toHaveBeenCalledWith({
+            owner: "owner",
+            repo: "repo",
+            path: TEST_DEST_PATH,
+            ref: TEST_BRANCH,
+        });
+        expect(mockOctokit.repos.createOrUpdateFileContents).toHaveBeenCalledWith(
+            expect.objectContaining({
+                owner: "owner",
+                repo: "repo",
+                path: TEST_DEST_PATH,
+                message: TEST_COMMIT_MSG,
+                branch: TEST_BRANCH,
+                content: Buffer.from("file-content").toString("base64"),
+                sha: undefined,
+            })
+        );
+    });
+
+    it("updates an existing file if it exists", async () => {
+        (fs.readFileSync as ReturnType<typeof vi.fn>).mockReturnValue("file-content");
+        mockOctokit.repos.getContent.mockResolvedValueOnce({ data: { sha: "abc123" } });
+        mockOctokit.repos.createOrUpdateFileContents.mockResolvedValueOnce({});
+
+        await github.pushFileToGitHub({
+            repoSlug: TEST_REPO,
+            branch: TEST_BRANCH,
+            filePath: TEST_FILE_PATH,
+            destPath: TEST_DEST_PATH,
+            token: TEST_TOKEN,
+        });
+
+        expect(mockOctokit.repos.createOrUpdateFileContents).toHaveBeenCalledWith(
+            expect.objectContaining({ sha: "abc123" })
+        );
+    });
+});
+
+describe("fetchGithubAssetMap", () => {
+    it("returns parsed map if file exists", async () => {
+        const fakeMap = { hash: { assetId: "id", filePath: "foo.png" } };
+        const encoded = Buffer.from(JSON.stringify(fakeMap)).toString("base64");
+        mockOctokit.repos.getContent.mockResolvedValueOnce({ data: { type: "file", content: encoded } });
+        const result = await github.fetchGithubAssetMap({ repoSlug: TEST_REPO, branch: TEST_BRANCH, token: TEST_TOKEN });
+        expect(result).toEqual(fakeMap);
+    });
+
+    it("returns empty object if file not found", async () => {
+        mockOctokit.repos.getContent.mockRejectedValueOnce(new Error("Not found"));
+        const result = await github.fetchGithubAssetMap({ repoSlug: TEST_REPO, branch: TEST_BRANCH, token: TEST_TOKEN });
+        expect(result).toEqual({});
+    });
+});
+
+describe("pushGithubAssetMap", () => {
+    it("writes the correct file and pushes to GitHub", async () => {
+        (sync.pathToAssetIdMap as any) = { "foo.png": "123" };
+        (sync.hashToAssetIdMap as any) = { "hash1": "123" };
+        (fs.writeFileSync as ReturnType<typeof vi.fn>).mockImplementation(() => { });
+        mockOctokit.repos.getContent.mockRejectedValueOnce(new Error("Not found"));
+        mockOctokit.repos.createOrUpdateFileContents.mockResolvedValueOnce({});
+
+        await github.pushGithubAssetMap(TEST_REPO, TEST_BRANCH, TEST_TOKEN);
+        expect(fs.writeFileSync).toHaveBeenCalledWith(
+            expect.stringContaining("github-asset-map.json"),
+            expect.stringContaining("foo.png"),
+            // The third argument (options) is optional and may be omitted
+        );
+        expect(mockOctokit.repos.createOrUpdateFileContents).toHaveBeenCalled();
+    });
+});
+
+describe("pullGithubAssetMap", () => {
+    it("updates local maps with new assets", async () => {
+        const remoteMap = { hash2: { assetId: "456", filePath: "bar.png" } };
+        vi.spyOn(github, "fetchGithubAssetMap").mockResolvedValueOnce(remoteMap);
+        (sync.hashToAssetIdMap as any) = {};
+        (sync.pathToAssetIdMap as any) = {};
+        const loggerInfo = vi.spyOn((github as any).default?.info || console, "info").mockImplementation(() => { });
+        await github.pullGithubAssetMap(TEST_REPO, TEST_BRANCH, TEST_TOKEN);
+        expect(sync.hashToAssetIdMap["hash2"]).toBe("456");
+        expect(sync.pathToAssetIdMap["bar.png"]).toBe("456");
+        loggerInfo.mockRestore();
+    });
+});

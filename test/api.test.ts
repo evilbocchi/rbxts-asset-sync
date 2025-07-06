@@ -1,26 +1,29 @@
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import * as api from "../src/api";
 
-jest.mock("form-data", () => {
-    return jest.fn().mockImplementation(() => ({
-        append: jest.fn(),
-        getBuffer: jest.fn(() => Buffer.from("formdata")),
-        getLengthSync: jest.fn(() => 42),
-        getHeaders: jest.fn(() => ({ "content-type": "multipart/form-data" })),
-    }));
+vi.mock("form-data", () => {
+    return {
+        default: vi.fn().mockImplementation(() => ({
+            append: vi.fn(),
+            getBuffer: vi.fn(() => Buffer.from("formdata")),
+            getLengthSync: vi.fn(() => 42),
+            getHeaders: vi.fn(() => ({ "content-type": "multipart/form-data" })),
+        })),
+    };
 });
 
 const OLD_ENV = process.env;
 
 describe("api.ts", () => {
     beforeEach(() => {
-        jest.resetModules();
+        vi.resetModules();
         process.env = { ...OLD_ENV, ROBLOX_API_KEY: "key", ROBLOX_USER_ID: "uid", ROBLOX_GROUP_ID: "" };
-        global.fetch = jest.fn();
+        global.fetch = vi.fn();
     });
 
     afterAll(() => {
         process.env = OLD_ENV;
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
     });
 
     describe("uploadAsset", () => {
@@ -35,7 +38,7 @@ describe("api.ts", () => {
         });
 
         it("throws if upload fails (non-ok response)", async () => {
-            (global.fetch as jest.Mock).mockResolvedValue({
+            (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
                 ok: false,
                 status: 400,
                 statusText: "Bad Request",
@@ -46,7 +49,7 @@ describe("api.ts", () => {
 
         it("returns assetId on success", async () => {
             // Mock fetch for upload
-            (global.fetch as jest.Mock)
+            (global.fetch as ReturnType<typeof vi.fn>)
                 .mockResolvedValueOnce({
                     ok: true,
                     json: async () => ({ path: "operation/123" }),
@@ -73,7 +76,7 @@ describe("api.ts", () => {
         });
 
         it("retries on non-ok response", async () => {
-            const fetchMock = (global.fetch as jest.Mock)
+            const fetchMock = (global.fetch as ReturnType<typeof vi.fn>)
                 .mockResolvedValueOnce({
                     ok: false,
                     status: 500,
@@ -90,7 +93,7 @@ describe("api.ts", () => {
         });
 
         it("polls until done is true", async () => {
-            const fetchMock = (global.fetch as jest.Mock)
+            const fetchMock = (global.fetch as ReturnType<typeof vi.fn>)
                 .mockResolvedValueOnce({
                     ok: true,
                     json: async () => ({ done: false }),
