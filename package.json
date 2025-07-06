@@ -5,6 +5,7 @@
     "main": "dist/main.js",
     "type": "module",
     "bin": {
+        "rbxtsas": "dist/main.js",
         "rbxts-asset-sync": "dist/main.js"
     },
     "scripts": {

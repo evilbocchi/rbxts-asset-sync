@@ -8,7 +8,7 @@ import { startWatcher } from "./watcher.js";
 function printHelp() {
     console.log(`
 Usage:
-  rbxts-asset-sync [options]
+  rbxtsas [options]
 
 Description:
   Synchronizes assets for Roblox TypeScript projects.
@@ -23,7 +23,7 @@ Options:
   --path=<folder>      Set the directory to look for assets (default: assets)
   --output=<file>      Set the output path for the generated asset map (default: assetMap.ts)
   --github=<repo>      Publish asset map and cache to GitHub repository (default: none)
-  
+
   --help               Show this help menu
     `);
 }

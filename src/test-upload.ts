@@ -9,7 +9,7 @@ dotenv.config();
 const [_, __, fileArg] = process.argv;
 
 if (!fileArg) {
-    console.error("Usage: npx rbx-asset-sync test-upload <filepath>");
+    console.error("Usage: npx rbxts-asset-sync test-upload <filepath>");
     process.exit(1);
 }
 
