@@ -80,13 +80,13 @@ describe("sync.ts", () => {
 
     it("should call uploadAsset for each file in syncAssetsOnce", async () => {
         const uploadAssetSpy = jest.spyOn(api, "uploadAsset").mockResolvedValue("54321");
-        await syncAssetsOnce(false);
+        await syncAssetsOnce();
         expect(uploadAssetSpy).toHaveBeenCalled();
         uploadAssetSpy.mockRestore();
     });
 
     it("should save cache and asset map without error", async () => {
-        await expect(save(false)).resolves.not.toThrow();
+        await expect(save()).resolves.not.toThrow();
     });
 
     it("should clean unused asset IDs from cache", () => {

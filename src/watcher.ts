@@ -1,6 +1,6 @@
 import chokidar from "chokidar";
 import fs from "fs";
-import { prefix, searchPath } from "./parameters.js";
+import { prefix, searchPath, verbose } from "./parameters.js";
 import { save, syncAssetFile, syncAssetsOnce, unlinkAssetFile } from "./sync.js";
 
 /**
@@ -14,7 +14,7 @@ export function startWatcher() {
     }
 
     // do a one-time sync before starting the watcher
-    syncAssetsOnce(false);
+    syncAssetsOnce();
     const watcher = chokidar.watch(`${searchPath}/**/*`, {
         persistent: true,
         ignoreInitial: true,
@@ -26,17 +26,18 @@ export function startWatcher() {
         })
         .on("add", (filePath) => {
             console.log(`${prefix} File added: ${filePath}`);
-            syncAssetFile(filePath, false);
-            save(false);
+            syncAssetFile(filePath);
+            save();
         })
         .on("change", (filePath) => {
             console.log(`${prefix} File changed: ${filePath}`);
-            syncAssetFile(filePath, false);
-            save(false);
+            syncAssetFile(filePath);
+            save();
         })
         .on("unlink", (filePath) => {
             console.log(`${prefix} File removed: ${filePath}`);
             unlinkAssetFile(filePath);
+            save();
         })
 
         .on("error", (error) => {

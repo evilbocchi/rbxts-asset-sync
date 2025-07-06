@@ -7,22 +7,24 @@ import { startWatcher } from "./watcher.js";
 
 function printHelp() {
     console.log(`
-rbxts-asset-sync
-
 Usage:
   rbxts-asset-sync [options]
 
-Options:
-  --help               Show this help menu
-  --watch              Watch for file changes and sync automatically
-  --bleed              Process images to bleed alpha channel (default: false)
-  --clean              Clean the asset cache and exit
-  --path=<folder>      Set the folder to watch for assets (default: assets)
-  --output=<file>      Set the output path for the generated asset map (default: assetMap.ts)
-  --cache=<file>       Set the cache file path (default: .rbx-sync-cache.json)
-
 Description:
   Synchronizes assets for Roblox TypeScript projects.
+
+Options:
+  --bleed              Process images to bleed alpha channel (default: false)
+  --clean              Clean the asset cache and exit
+  --silent             Suppress all output except errors
+  --watch              Watch for file changes and sync automatically
+
+  --cache=<file>       Set the cache file path (default: .rbx-sync-cache.json)
+  --path=<folder>      Set the directory to look for assets (default: assets)
+  --output=<file>      Set the output path for the generated asset map (default: assetMap.ts)
+  --github=<repo>      Publish asset map and cache to GitHub repository (default: none)
+  
+  --help               Show this help menu
     `);
 }
 
