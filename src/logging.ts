@@ -1,4 +1,4 @@
-import { logLevel } from 'parameters';
+import { logLevel } from './parameters.js';
 import signale from 'signale';
 
 const LOGGER = new signale.Signale({
