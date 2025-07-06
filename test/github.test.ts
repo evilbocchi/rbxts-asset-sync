@@ -1,12 +1,11 @@
 import { Octokit } from "@octokit/rest";
 import fs from "fs";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as github from "../src/github";
-import * as sync from "../src/sync";
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { hashToAssetIdMap, pathToAssetIdMap } from "../src/sync";
 
 vi.mock("@octokit/rest");
 vi.mock("fs");
-vi.mock("../src/sync");
 
 const mockOctokit = {
     repos: {
@@ -26,6 +25,8 @@ const TEST_COMMIT_MSG = "Test commit";
 
 beforeEach(() => {
     vi.clearAllMocks();
+    Object.keys(hashToAssetIdMap).forEach(k => delete hashToAssetIdMap[k]);
+    Object.keys(pathToAssetIdMap).forEach(k => delete pathToAssetIdMap[k]);
 });
 
 describe("pushFileToGitHub", () => {
@@ -73,6 +74,7 @@ describe("pushFileToGitHub", () => {
             filePath: TEST_FILE_PATH,
             destPath: TEST_DEST_PATH,
             token: TEST_TOKEN,
+            commitMessage: TEST_COMMIT_MSG,
         });
 
         expect(mockOctokit.repos.createOrUpdateFileContents).toHaveBeenCalledWith(
@@ -99,8 +101,8 @@ describe("fetchGithubAssetMap", () => {
 
 describe("pushGithubAssetMap", () => {
     it("writes the correct file and pushes to GitHub", async () => {
-        (sync.pathToAssetIdMap as any) = { "foo.png": "123" };
-        (sync.hashToAssetIdMap as any) = { "hash1": "123" };
+        Object.assign(pathToAssetIdMap, { "foo.png": "123" });
+        Object.assign(hashToAssetIdMap, { "hash1": "123" });
         (fs.writeFileSync as ReturnType<typeof vi.fn>).mockImplementation(() => { });
         mockOctokit.repos.getContent.mockRejectedValueOnce(new Error("Not found"));
         mockOctokit.repos.createOrUpdateFileContents.mockResolvedValueOnce({});
@@ -118,13 +120,12 @@ describe("pushGithubAssetMap", () => {
 describe("pullGithubAssetMap", () => {
     it("updates local maps with new assets", async () => {
         const remoteMap = { hash2: { assetId: "456", filePath: "bar.png" } };
-        vi.spyOn(github, "fetchGithubAssetMap").mockResolvedValueOnce(remoteMap);
-        (sync.hashToAssetIdMap as any) = {};
-        (sync.pathToAssetIdMap as any) = {};
-        const loggerInfo = vi.spyOn((github as any).default?.info || console, "info").mockImplementation(() => { });
+        const encoded = Buffer.from(JSON.stringify(remoteMap)).toString("base64");
+        mockOctokit.repos.getContent.mockResolvedValueOnce({ data: { type: "file", content: encoded } });
+
         await github.pullGithubAssetMap(TEST_REPO, TEST_BRANCH, TEST_TOKEN);
-        expect(sync.hashToAssetIdMap["hash2"]).toBe("456");
-        expect(sync.pathToAssetIdMap["bar.png"]).toBe("456");
-        loggerInfo.mockRestore();
+
+        expect(hashToAssetIdMap["hash2"]).toBe("456");
+        expect(pathToAssetIdMap["bar.png"]).toBe("456");
     });
 });
