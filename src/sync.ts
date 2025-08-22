@@ -41,7 +41,9 @@ async function saveAssetMap() {
         "export const assets = {"
     ];
 
-    for (const [filePath, assetId] of Object.entries(pathToAssetIdMap)) {
+    const keys = Object.keys(pathToAssetIdMap).sort();
+    for (const filePath of keys) {
+        const assetId = pathToAssetIdMap[filePath];
         const normalizedPath = filePath.replace(/\\/g, "/");
         lines.push(`  \"${normalizedPath}\": \"rbxassetid://${assetId}\",`);
     }
@@ -50,7 +52,7 @@ async function saveAssetMap() {
     lines.push("export function getAsset(path: keyof typeof assets): string {\n  return assets[path];\n}");
 
     await fs.promises.writeFile(assetMapOutputPath, lines.join("\n"));
-    LOGGER.info(`Asset map generated with ${Object.keys(pathToAssetIdMap).length} entries at ${assetMapOutputPath}`);
+    LOGGER.info(`Asset map generated with ${keys.length} entries at ${assetMapOutputPath}`);
 }
 
 /**
