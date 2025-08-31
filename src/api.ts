@@ -55,7 +55,7 @@ export async function uploadAsset(filename: string, buffer: Buffer): Promise<str
             ...form.getHeaders(),
             "Content-Length": contentLength.toString(),
         },
-        body: formBuffer,
+        body: new Uint8Array(formBuffer),
     });
 
     if (!res.ok) {
