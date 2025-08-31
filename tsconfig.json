@@ -13,9 +13,9 @@
         "isolatedModules": true,
 		"strict": true,
 		"lib": [
-			"ESNext",
-			"DOM"
+			"ESNext"
 		],
+		"types": ["node"],
         "skipLibCheck": true,
 		"esModuleInterop": true,
 

@@ -9,7 +9,7 @@ import { cleanCache, syncAssetsOnce } from "./sync.js";
 import { startWatcher } from "./watcher.js";
 
 function printHelp() {
-    LOGGER.log(`
+	LOGGER.log(`
 Usage:
   rbxtsas [command] [options]
 
@@ -36,44 +36,43 @@ Options:
 
 dotenv.config();
 
-let rbxtsasStartIndex = process.argv.findIndex(arg => arg === "rbxtsas" || arg === "rbxts-asset-sync");
+let rbxtsasStartIndex = process.argv.findIndex((arg) => arg === "rbxtsas" || arg === "rbxts-asset-sync");
 if (rbxtsasStartIndex === -1) {
-    rbxtsasStartIndex = process.argv.findIndex(arg => arg.includes("main.ts")); // fallback for direct script execution
+	rbxtsasStartIndex = process.argv.findIndex((arg) => arg.includes("main.ts")); // fallback for direct script execution
 }
 const args = process.argv.slice(rbxtsasStartIndex + 1);
 
 if (args.includes("--help") || args.includes("-h") || args.includes("help")) {
-    printHelp();
-    process.exit(0);
+	printHelp();
+	process.exit(0);
 }
 
 if (installMode) {
-    const githubToken = process.env.GITHUB_TOKEN;
-    if (!githubToken) {
-        LOGGER.error("GITHUB_TOKEN environment variable is not set. Cannot publish or install asset library.");
-        process.exit(1);
-    }
+	const githubToken = process.env.GITHUB_TOKEN;
+	if (!githubToken) {
+		LOGGER.error("GITHUB_TOKEN environment variable is not set. Cannot publish or install asset library.");
+		process.exit(1);
+	}
 
-    const repoSlug = args[1];
-    const namespace = repoSlug.split("/")[1];
-    await downloadAssetLibrary(namespace, repoSlug, githubBranch, githubToken);
-    LOGGER.info(`Installed asset library @${namespace} from ${repoSlug} branch ${githubBranch}`);
-    process.exit(0);
+	const repoSlug = args[1];
+	const namespace = repoSlug.split("/")[1];
+	await downloadAssetLibrary(namespace, repoSlug, githubBranch, githubToken);
+	LOGGER.info(`Installed asset library @${namespace} from ${repoSlug} branch ${githubBranch}`);
+	process.exit(0);
 }
 
 if (cleanMode) {
-    cleanCache();
-    process.exit(0);
+	cleanCache();
+	process.exit(0);
 }
 
 if (watchMode) {
-    // do a one-time sync before starting the watcher
-    await pullGithubAssetMap();
-    await syncAssetsOnce();
-    await startWatcher();
-}
-else {
-    await pullGithubAssetMap();
-    await syncAssetsOnce();
-    await pushGithubAssetMap();
+	// do a one-time sync before starting the watcher
+	await pullGithubAssetMap();
+	await syncAssetsOnce();
+	await startWatcher();
+} else {
+	await pullGithubAssetMap();
+	await syncAssetsOnce();
+	await pushGithubAssetMap();
 }

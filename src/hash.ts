@@ -7,5 +7,5 @@ import crypto from "crypto";
  * @returns The SHA-1 hash as a hexadecimal string.
  */
 export function getHash(buffer: Buffer): string {
-    return crypto.createHash("sha1").update(buffer).digest("hex");
+	return crypto.createHash("sha1").update(buffer).digest("hex");
 }
