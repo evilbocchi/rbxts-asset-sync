@@ -41,6 +41,12 @@ let rbxtsasStartIndex = process.argv.findIndex((arg) => arg === "rbxtsas" || arg
 if (rbxtsasStartIndex === -1) {
 	rbxtsasStartIndex = process.argv.findIndex((arg) => arg.includes("main.ts")); // fallback for direct script execution
 }
+if (rbxtsasStartIndex === -1) {
+	rbxtsasStartIndex = process.argv.findIndex((arg) => arg.includes("main.js")); // bin fallback
+}
+if (rbxtsasStartIndex === -1) {
+	rbxtsasStartIndex = 1;
+}
 const args = process.argv.slice(rbxtsasStartIndex + 1);
 
 if (args.includes("--help") || args.includes("-h") || args.includes("help")) {
