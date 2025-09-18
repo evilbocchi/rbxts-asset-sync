@@ -63,7 +63,7 @@ export async function uploadAsset(filename: string, buffer: Buffer): Promise<str
 		throw `${res.status} ${res.statusText}\n${errText}`;
 	}
 
-	const data = await res.json();
+	const data = (await res.json()) as { path: string };
 
 	await new Promise((resolve) => setTimeout(resolve, 500)); // short delay to ensure asset is processed
 	const asset = await getAsset(data.path);
@@ -101,13 +101,13 @@ export async function getAsset(operationPath: string, retries = 3) {
 	}
 
 	const data = await res.json();
-	if (!data.done) {
+	if (!(data as { done: boolean }).done) {
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 		LOGGER.info("Asset not ready yet, retrying...");
 		return getAsset(operationPath, retries + 1);
 	}
 
-	return data;
+	return data as { done: boolean; response: { assetId: string } };
 }
 
 /**
