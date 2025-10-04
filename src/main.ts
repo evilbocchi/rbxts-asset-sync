@@ -2,10 +2,11 @@
 
 import dotenv from "dotenv";
 import { pullGithubAssetMap, pushGithubAssetMap } from "./github.js";
+import { registerCleanup, setupGracefulShutdown } from "./graceful-shutdown.js";
 import LOGGER from "./logging.js";
 import { downloadAssetLibrary } from "./package/install.js";
 import { addMode, cleanMode, githubBranch, installMode, watchMode } from "./parameters.js";
-import { addAssetToCache, cleanCache, syncAssetsOnce } from "./sync.js";
+import { addAssetToCache, cleanCache, save, syncAssetsOnce } from "./sync.js";
 import { startWatcher } from "./watcher.js";
 
 function printHelp() {
@@ -36,6 +37,37 @@ Options:
 }
 
 dotenv.config();
+
+// Set up graceful shutdown handling
+setupGracefulShutdown();
+
+// Register cleanup functions that will run when the program exits
+registerCleanup(async () => {
+	LOGGER.info("Saving cache and asset map during shutdown...");
+	try {
+		await save();
+		LOGGER.info("Cache and asset map saved successfully during shutdown.");
+	} catch (error) {
+		LOGGER.error("Failed to save cache and asset map during shutdown:", error);
+		throw error; // Re-throw to be handled by graceful shutdown
+	}
+});
+
+registerCleanup(async () => {
+	// Only attempt GitHub push if GitHub repo is configured
+	if (process.env.GITHUB_TOKEN && process.argv.some((arg) => arg.startsWith("--github="))) {
+		LOGGER.info("Pushing asset map to GitHub during shutdown...");
+		try {
+			await pushGithubAssetMap();
+			LOGGER.info("Asset map pushed to GitHub successfully during shutdown.");
+		} catch (error) {
+			LOGGER.error("Failed to push asset map to GitHub during shutdown:", error);
+			throw error; // Re-throw to be handled by graceful shutdown
+		}
+	} else {
+		LOGGER.debug("Skipping GitHub push during shutdown (not configured).");
+	}
+});
 
 let rbxtsasStartIndex = process.argv.findIndex((arg) => arg === "rbxtsas" || arg === "rbxts-asset-sync");
 if (rbxtsasStartIndex === -1) {
