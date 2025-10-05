@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { uploadAsset } from "./api.js";
+import { getUploadDisplayInfo } from "./sync.js";
 import LOGGER from "./logging.js";
 import { prefix } from "./parameters.js";
 
@@ -24,8 +25,9 @@ if (!fs.existsSync(resolvedPath)) {
 
 const fileBuffer = fs.readFileSync(resolvedPath);
 const filename = path.basename(resolvedPath);
+const { displayName } = getUploadDisplayInfo(resolvedPath);
 
-uploadAsset(filename, fileBuffer)
+uploadAsset(filename, fileBuffer, displayName)
 	.then((id) => {
 		if (!id) {
 			LOGGER.error(`Upload failed: Unsupported file type or API error.`);

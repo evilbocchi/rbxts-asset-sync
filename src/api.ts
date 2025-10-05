@@ -8,10 +8,11 @@ import LOGGER from "./logging.js";
  *
  * @param filename - The name of the file to upload.
  * @param buffer - The file content as a Buffer.
+ * @param displayName - Optional display name sent to Roblox (defaults to filename).
  * @returns The uploaded asset's ID as a string, or undefined if the asset type is not supported.
  * @throws If the ROBLOX_API_KEY environment variable is not set or the upload fails.
  */
-export async function uploadAsset(filename: string, buffer: Buffer): Promise<string | undefined> {
+export async function uploadAsset(filename: string, buffer: Buffer, displayName?: string): Promise<string | undefined> {
 	const API_KEY = process.env.ROBLOX_API_KEY;
 	const USER_ID = process.env.ROBLOX_USER_ID;
 	const GROUP_ID = process.env.ROBLOX_GROUP_ID;
@@ -31,7 +32,7 @@ export async function uploadAsset(filename: string, buffer: Buffer): Promise<str
 	// Prepare the request JSON (without fileContent)
 	const requestData = {
 		assetType: guessed,
-		displayName: filename,
+		displayName: displayName ?? filename,
 		description: "Uploaded via rbx-asset-sync",
 		creationContext: {
 			creator: GROUP_ID ? { groupId: GROUP_ID } : { userId: USER_ID },

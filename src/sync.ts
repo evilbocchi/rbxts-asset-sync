@@ -6,6 +6,49 @@ import { getHash } from "./hash.js";
 import LOGGER from "./logging.js";
 import { assetMapOutputPath, bleedMode, cacheOutputPath, searchPath } from "./parameters.js";
 
+export const MAX_ROBLOX_DISPLAY_NAME_LENGTH = 50;
+
+function computeNormalizedAssetPath(filePath: string): string {
+	const absoluteFilePath = path.resolve(filePath);
+	const absoluteSearchPath = path.resolve(searchPath);
+	const relativePath = path.relative(absoluteSearchPath, absoluteFilePath);
+	const baseSegment = path.basename(absoluteSearchPath);
+
+	if (relativePath === "") {
+		return baseSegment;
+	}
+
+	const isInsideSearchPath = relativePath && !relativePath.startsWith("..") && !path.isAbsolute(relativePath);
+
+	if (isInsideSearchPath) {
+		const normalizedRelative = relativePath.split(path.sep).join("/");
+		return normalizedRelative ? `${baseSegment}/${normalizedRelative}` : baseSegment;
+	}
+
+	return filePath.split(path.sep).join("/");
+}
+
+function truncateAssetPathForRoblox(normalizedPath: string): string {
+	if (normalizedPath.length <= MAX_ROBLOX_DISPLAY_NAME_LENGTH) {
+		return normalizedPath;
+	}
+
+	const ellipsis = "...";
+	if (MAX_ROBLOX_DISPLAY_NAME_LENGTH <= ellipsis.length) {
+		return normalizedPath.slice(0, MAX_ROBLOX_DISPLAY_NAME_LENGTH);
+	}
+
+	const tailLength = MAX_ROBLOX_DISPLAY_NAME_LENGTH - ellipsis.length;
+	const tail = normalizedPath.slice(-tailLength);
+	return `${ellipsis}${tail}`;
+}
+
+export function getUploadDisplayInfo(filePath: string): { normalizedPath: string; displayName: string } {
+	const normalizedPath = computeNormalizedAssetPath(filePath);
+	const displayName = truncateAssetPathForRoblox(normalizedPath);
+	return { normalizedPath, displayName };
+}
+
 /**
  * Cache mapping file hashes to Roblox asset IDs to avoid re-uploading identical files.
  */
@@ -89,6 +132,7 @@ export async function syncAssetsOnce(): Promise<void> {
 export async function syncAssetFile(filePath: string): Promise<string | undefined> {
 	let assetBuffer = fs.readFileSync(filePath);
 	const assetName = path.basename(filePath);
+	const { normalizedPath, displayName } = getUploadDisplayInfo(filePath);
 	let hash = getHash(assetBuffer);
 
 	// If --bleed is enabled and this is an image,
@@ -106,7 +150,11 @@ export async function syncAssetFile(filePath: string): Promise<string | undefine
 	}
 
 	try {
-		const assetId = await uploadAsset(assetName, assetBuffer);
+		if (displayName !== normalizedPath) {
+			LOGGER.debug(`Display name truncated for upload: "${normalizedPath}" -> "${displayName}"`);
+		}
+
+		const assetId = await uploadAsset(assetName, assetBuffer, displayName);
 		if (!assetId) {
 			LOGGER.warn(`Skipping ${filePath} due to unsupported file type.`);
 			return;
