@@ -13,6 +13,7 @@ import {
 import fs from "fs";
 import path from "path";
 import * as api from "../src/api"; // Import the module to mock uploadAsset
+import * as audio from "../src/audio";
 import { vi, describe, it, expect, beforeAll, afterAll } from "vitest";
 
 describe("sync.ts", () => {
@@ -81,6 +82,28 @@ describe("sync.ts", () => {
 		expect(result).toBeUndefined();
 		uploadAssetSpy.mockRestore();
 		fs.unlinkSync(fakeFile);
+	});
+
+	it("should convert wav files to ogg before upload", async () => {
+		const wavFile = path.join(testDir, "sound.wav");
+		fs.writeFileSync(wavFile, Buffer.from("wav"));
+		const oggBuffer = Buffer.from("oggdata");
+		const convertSpy = vi.spyOn(audio, "convertWavToOgg").mockResolvedValue(oggBuffer);
+		const uploadAssetSpy = vi.spyOn(api, "uploadAsset").mockResolvedValue("wav-id");
+
+		const result = await syncAssetFile(wavFile);
+
+		expect(convertSpy).toHaveBeenCalled();
+		expect(uploadAssetSpy).toHaveBeenCalled();
+		const [uploadedName, uploadedBuffer, uploadedDisplay] = uploadAssetSpy.mock.calls[0];
+		expect(uploadedName).toBe("sound.ogg");
+		expect((uploadedBuffer as Buffer).equals(oggBuffer)).toBe(true);
+		expect(uploadedDisplay).toBe(getUploadDisplayInfo(wavFile).displayName);
+		expect(result).toBe("wav-id");
+
+		convertSpy.mockRestore();
+		uploadAssetSpy.mockRestore();
+		fs.unlinkSync(wavFile);
 	});
 
 	it("should truncate display name when asset path exceeds Roblox limit", async () => {

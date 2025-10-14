@@ -125,6 +125,7 @@ function guessAssetType(ext: string) {
 			return "Image";
 		case ".mp3":
 		case ".ogg":
+		case ".wav":
 			return "Audio";
 		case ".fbx":
 			return "Model";

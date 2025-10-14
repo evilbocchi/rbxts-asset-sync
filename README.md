@@ -19,6 +19,8 @@ Local asset CDN pipeline for [roblox-ts](https://roblox-ts.com/).
 - **Caching:** Avoids re-uploading unchanged assets using a hash-based cache.
 - **Roblox-ts Integration:** Asset map can be imported and used directly in roblox-ts scripts.
 - **VS Code Integration:** Install the [VS Code extension](https://github.com/evilbocchi/rbxts-asset-sync-vscode) to enjoy image/audio previews and information from simply hovering over.
+ - **Lossless WAV Support:** `.wav` files are transcoded to OGG (FLAC) on-the-fly before upload—no temp files required.
+ - **VS Code Integration:** Install the [VS Code extension](https://github.com/evilbocchi/rbxts-asset-sync-vscode) to enjoy image/audio previews and information from simply hovering over.
 
 ## Installation
 

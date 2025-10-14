@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { uploadAsset } from "./api.js";
 import { bleedAlpha } from "./bleed.js";
+import { convertWavToOgg } from "./audio.js";
 import { getHash } from "./hash.js";
 import LOGGER from "./logging.js";
 import { assetMapOutputPath, bleedMode, cacheOutputPath, searchPath } from "./parameters.js";
@@ -134,12 +135,16 @@ export async function syncAssetFile(filePath: string): Promise<string | undefine
 	const assetName = path.basename(filePath);
 	const { normalizedPath, displayName } = getUploadDisplayInfo(filePath);
 	let hash = getHash(assetBuffer);
+	const shouldBleed = bleedMode && /\.(png|jpg|jpeg)$/i.test(assetName);
+	const isWav = /\.wav$/i.test(assetName);
+	let uploadName = assetName;
 
-	// If --bleed is enabled and this is an image,
-	if (bleedMode && /\.(png|jpg|jpeg)$/i.test(assetName)) {
+	if (shouldBleed) {
 		hash += "(bleed)";
-		const processed = await bleedAlpha(assetBuffer);
-		assetBuffer = Buffer.from(processed);
+	}
+
+	if (isWav) {
+		hash += "(wav->ogg)";
 	}
 
 	if (hash in hashToAssetIdMap) {
@@ -154,7 +159,19 @@ export async function syncAssetFile(filePath: string): Promise<string | undefine
 			LOGGER.debug(`Display name truncated for upload: "${normalizedPath}" -> "${displayName}"`);
 		}
 
-		const assetId = await uploadAsset(assetName, assetBuffer, displayName);
+		if (shouldBleed) {
+			const processed = await bleedAlpha(assetBuffer);
+			assetBuffer = Buffer.from(processed);
+		}
+
+		if (isWav) {
+			const converted = await convertWavToOgg(assetBuffer);
+			assetBuffer = Buffer.from(converted);
+			const parsed = path.parse(uploadName);
+			uploadName = `${parsed.name}.ogg`;
+		}
+
+		const assetId = await uploadAsset(uploadName, assetBuffer, displayName);
 		if (!assetId) {
 			LOGGER.warn(`Skipping ${filePath} due to unsupported file type.`);
 			return;

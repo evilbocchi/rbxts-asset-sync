@@ -1,70 +1,71 @@
 {
-    "name": "rbxts-asset-sync",
-    "version": "0.3.3",
-    "description": "Local asset CDN pipeline for roblox-ts",
-    "main": "dist/main.js",
-    "type": "module",
-    "bin": {
-        "rbxtsas": "dist/main.js",
-        "rbxts-asset-sync": "dist/main.js",
-        "rbxtsas-test-upload": "dist/test-upload.js"
-    },
-    "scripts": {
-        "build": "tsc",
-        "lint": "eslint . --fix",
-        "try": "npx tsx src/main.ts",
-        "test": "vitest run",
-        "test:ui": "vitest --ui",
-        "test:coverage": "vitest run --coverage",
-        "prepublishOnly": "npm run build"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/evilbocchi/rbxts-asset-sync.git"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "MIT",
-    "types": "dist/main.d.ts",
-    "files": [
-        "dist",
-        "!**/*.tsbuildinfo"
-    ],
-    "publishConfig": {
-        "access": "public"
-    },
-    "devDependencies": {
-        "@babel/plugin-transform-modules-commonjs": "^7.27.1",
-        "@babel/preset-env": "^7.28.0",
-        "@eslint/js": "^9.34.0",
-        "@types/mime": "^3.0.4",
-        "@types/node": "^24.0.10",
-        "@types/signale": "^1.4.7",
-        "@typescript-eslint/eslint-plugin": "^7.18.0",
-        "@typescript-eslint/parser": "^7.18.0",
-        "@vitest/coverage-v8": "^3.2.4",
-        "@vitest/ui": "^3.2.4",
-        "babel-plugin-transform-import-meta": "^2.3.3",
-        "core-js": "^3.43.0",
-        "eslint": "^8.57.0",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-prettier": "^5.5.4",
-        "typedoc": "^0.26.5",
-        "typedoc-material-theme": "^1.1.0",
-        "typedoc-plugin-extras": "^3.1.0",
-        "typedoc-plugin-missing-exports": "^3.0.0",
-        "typedoc-plugin-rename-defaults": "^0.7.1",
-        "typescript": "^5.5.4",
-        "vitest": "^3.2.4"
-    },
-    "dependencies": {
-        "@octokit/rest": "^22.0.0",
-        "chokidar": "^4.0.3",
-        "dotenv": "^17.0.1",
-        "form-data": "^4.0.3",
-        "mime": "^2.6.0",
-        "sharp": "^0.34.2",
-        "signale": "^1.4.0",
-        "undici": "^6.21.3"
-    }
+	"name": "rbxts-asset-sync",
+	"version": "0.3.3",
+	"description": "Local asset CDN pipeline for roblox-ts",
+	"main": "dist/main.js",
+	"type": "module",
+	"bin": {
+		"rbxtsas": "dist/main.js",
+		"rbxts-asset-sync": "dist/main.js",
+		"rbxtsas-test-upload": "dist/test-upload.js"
+	},
+	"scripts": {
+		"build": "tsc",
+		"lint": "eslint . --fix",
+		"try": "npx tsx src/main.ts",
+		"test": "vitest run",
+		"test:ui": "vitest --ui",
+		"test:coverage": "vitest run --coverage",
+		"prepublishOnly": "npm run build"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/evilbocchi/rbxts-asset-sync.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "MIT",
+	"types": "dist/main.d.ts",
+	"files": [
+		"dist",
+		"!**/*.tsbuildinfo"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"devDependencies": {
+		"@babel/plugin-transform-modules-commonjs": "^7.27.1",
+		"@babel/preset-env": "^7.28.0",
+		"@eslint/js": "^9.34.0",
+		"@types/mime": "^3.0.4",
+		"@types/node": "^24.0.10",
+		"@types/signale": "^1.4.7",
+		"@typescript-eslint/eslint-plugin": "^7.18.0",
+		"@typescript-eslint/parser": "^7.18.0",
+		"@vitest/coverage-v8": "^3.2.4",
+		"@vitest/ui": "^3.2.4",
+		"babel-plugin-transform-import-meta": "^2.3.3",
+		"core-js": "^3.43.0",
+		"eslint": "^8.57.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-prettier": "^5.5.4",
+		"typedoc": "^0.26.5",
+		"typedoc-material-theme": "^1.1.0",
+		"typedoc-plugin-extras": "^3.1.0",
+		"typedoc-plugin-missing-exports": "^3.0.0",
+		"typedoc-plugin-rename-defaults": "^0.7.1",
+		"typescript": "^5.5.4",
+		"vitest": "^3.2.4"
+	},
+	"dependencies": {
+		"@octokit/rest": "^22.0.0",
+		"chokidar": "^4.0.3",
+		"dotenv": "^17.0.1",
+		"form-data": "^4.0.3",
+		"mime": "^2.6.0",
+		"ffmpeg-static": "^5.2.0",
+		"sharp": "^0.34.2",
+		"signale": "^1.4.0",
+		"undici": "^6.21.3"
+	}
 }
