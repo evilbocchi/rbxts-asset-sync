@@ -6,7 +6,7 @@ import { registerCleanup, setupGracefulShutdown } from "./graceful-shutdown.js";
 import LOGGER from "./logging.js";
 import { downloadAssetLibrary } from "./package/install.js";
 import { addMode, cleanMode, githubBranch, installMode, watchMode } from "./parameters.js";
-import { addAssetToCache, cleanCache, save, syncAssetsOnce } from "./sync.js";
+import { addAssetToCache, cleanCache, disablePersistence, save, syncAssetsOnce } from "./sync.js";
 import { startWatcher } from "./watcher.js";
 
 function printHelp() {
@@ -34,6 +34,31 @@ Options:
   --branch=<branch>        Branch to use for GitHub operations (default: main)
   --help                   Show this help menu
     `);
+}
+
+function validateUploadEnvironment(): boolean {
+	const missing: string[] = [];
+
+	if (!process.env.ROBLOX_API_KEY) {
+		missing.push("ROBLOX_API_KEY");
+	}
+
+	if (!process.env.ROBLOX_USER_ID && !process.env.ROBLOX_GROUP_ID) {
+		missing.push("ROBLOX_USER_ID or ROBLOX_GROUP_ID");
+	}
+
+	if (missing.length > 0) {
+		const list = missing.join(", ");
+		const reason = `Missing required Roblox environment variable${missing.length > 1 ? "s" : ""}: ${list}.`;
+		LOGGER.error(`${reason} Asset uploads are disabled for this run.`);
+		disablePersistence(`${reason} Existing cache files will remain untouched.`);
+		LOGGER.warn(
+			"Set the required Roblox environment variables or run commands like 'clean'/'add' to modify the cache explicitly.",
+		);
+		return false;
+	}
+
+	return true;
 }
 
 dotenv.config();
@@ -123,15 +148,20 @@ if (addMode) {
 
 if (cleanMode) {
 	cleanCache();
+	await save();
 	process.exit(0);
 }
 
-if (watchMode) {
+const shouldSyncAssets = !installMode && !addMode && !cleanMode;
+
+if (shouldSyncAssets && !validateUploadEnvironment()) {
+	process.exitCode = 1;
+} else if (watchMode) {
 	// do a one-time sync before starting the watcher
 	await pullGithubAssetMap();
 	await syncAssetsOnce();
 	await startWatcher();
-} else {
+} else if (shouldSyncAssets) {
 	await pullGithubAssetMap();
 	await syncAssetsOnce();
 	await pushGithubAssetMap();

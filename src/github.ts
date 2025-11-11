@@ -1,7 +1,7 @@
 import { Octokit } from "@octokit/rest";
 import LOGGER from "./logging.js";
 import { githubRepo } from "./parameters.js";
-import { hashToAssetIdMap, pathToAssetIdMap } from "./sync.js";
+import { hashToAssetIdMap, pathToAssetIdMap, setCacheEntry, setPathMapping } from "./sync.js";
 
 /**
  * Pushes a file to a GitHub repository using the GitHub API.
@@ -162,8 +162,8 @@ export async function pullGithubAssetMap(repoSlug = githubRepo, branch = "main",
 			if (!(hash in hashToAssetIdMap)) {
 				LOGGER.info(`Pulled asset from GitHub: ${filePath} (rbxassetid://${assetId})`);
 			}
-			hashToAssetIdMap[hash] = assetId;
-			pathToAssetIdMap[filePath] = assetId;
+			setCacheEntry(hash, assetId);
+			setPathMapping(filePath, assetId);
 		}
 	} catch (err) {
 		LOGGER.error("Failed to pull from GitHub:", err);
