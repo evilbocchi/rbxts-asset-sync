@@ -61,7 +61,7 @@ function validateUploadEnvironment(): boolean {
 	return true;
 }
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 // Set up graceful shutdown handling
 setupGracefulShutdown();
