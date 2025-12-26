@@ -1,0 +1,8 @@
+name: "Development"
+description: "Development environment configuration"
+debug: true
+logLevel: "verbose"
+features:
+  textureCompression: true
+  audioStreaming: false
+  maxPlayers: 12
